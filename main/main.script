@@ -2,14 +2,49 @@ function init(self)
 	msg.post(".", "acquire_input_focus")
 	msg.post("@render:", "use_fixed_fit_projection", { near = -1, far = 1 })
 
+	-- Spawn grid of sprites
 	local n = 1
 	for j = 1, 10 do
 		for i = 1, 20 do
-			local pos = vmath.vector3(i * 64, j * 64, 2 + (j * 20 + i) / 1000)
-			factory.create("#sprite" .. n, pos)
+			local hide_z = 2 -- Set 0 to see the sprites
+			local pos = vmath.vector3(i * 64, j * 64, hide_z + (j * 20 + i) / 1000)
+
+			-- Uncomment to test sprites or models
+			-- Standard sprite (different Z, see above, forces to make separate draw call for each sprite)
+			-- factory.create("#sprite" .. n, pos)
+			-- Quad as "sprite"
+			factory.create("#sprite_quad", pos, nil, nil, vmath.vector3(64))
+
 			n = n + 1
 			if n > 2 then n = 1 end
 		end
+	end
+end
+
+-- Frame stats
+local start_frame = 0
+local cur_frame = 0
+local time_accum = 0
+local draw_time_accum = 0
+
+--
+--
+--
+function update(self, dt)
+	draw_time_accum = draw_time_accum + (draw_time or 0)
+	cur_frame = cur_frame + 1
+	time_accum = time_accum + dt
+	if time_accum >= 1.0 then
+		local df = cur_frame - start_frame
+		local fps = math.min(999, math.floor(df / time_accum))
+		local api_spent = draw_time_accum / time_accum
+
+		local t = "FPS: " .. string.format("%d", fps) .. "\n" .. "Draw time (per 1 sec): " .. string.format("%d ms", api_spent * 1000)
+		label.set_text("#label", t)
+
+		start_frame = cur_frame
+		time_accum = 0
+		draw_time_accum = 0
 	end
 end
 

@@ -1,6 +1,5 @@
 [project]
 title = issue_drawcalls
-dependencies#0 = https://github.com/indiesoftby/defold-lua51/archive/refs/heads/main.zip
 
 [bootstrap]
 main_collection = /main/main.collectionc
@@ -37,5 +36,11 @@ clear_color_green = 0.25
 clear_color_blue = 0.25
 
 [sprite]
-max_count = 200
+max_count = 1000
+
+[factory]
+max_count = 1000
+
+[model]
+max_count = 1000
 
