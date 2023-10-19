@@ -2,18 +2,23 @@ function init(self)
 	msg.post(".", "acquire_input_focus")
 	msg.post("@render:", "use_fixed_fit_projection", { near = -1, far = 1 })
 
+	light = vmath.vector4(1, 1, 1, 1)
+
 	-- Spawn grid of sprites
 	local n = 1
 	for j = 1, 10 do
 		for i = 1, 20 do
 			local hide_z = 2 -- Set 0 to see the sprites
-			local pos = vmath.vector3(i * 64, j * 64, hide_z + (j * 20 + i) / 1000)
+			local pos = vmath.vector3(i * 64, j * 64 + 50, hide_z + (j * 20 + i) / 1000)
 
-			-- Uncomment to test sprites or models
-			-- Standard sprite (different Z, see above, forces to make separate draw call for each sprite)
-			-- factory.create("#sprite" .. n, pos)
-			-- Quad as "sprite"
-			factory.create("#sprite_quad", pos, nil, nil, vmath.vector3(64))
+			if j <= 5 then
+				-- Standard sprite (different Z, see above, forces to make separate draw call for each sprite)
+				factory.create("#sprite" .. n, pos)
+			else
+				-- Model (just quad)
+				local id = factory.create("#sprite_model", pos, nil, nil, vmath.vector3(64))
+				go.set(msg.url(nil, id, "model"), "light", light)
+			end
 
 			n = n + 1
 			if n > 2 then n = 1 end
@@ -22,29 +27,52 @@ function init(self)
 end
 
 -- Frame stats
-local start_frame = 0
-local cur_frame = 0
-local time_accum = 0
+local fps_start_frame = 0
+local fps_cur_frame = 0
+local fps_time_accum = 0
+
+local draw_frame_num = 0
 local draw_time_accum = 0
+
+local fps = nil
+local api_spent = nil
+local api_spent_min = 999
+
+local engine_sha1 = sys.get_engine_info().version_sha1
+
+local function update_stats(self)
+	local t = "FPS: " .. string.format("%02d", fps or -1) .. string.format(", Engine SHA1 %s\n", engine_sha1)
+	t = t .. "Draw time (per 60 frames): " .. string.format("%d ms (min %d)", (api_spent or -1) * 1000, api_spent_min * 1000)
+	label.set_text("#label", t)
+end
 
 --
 --
 --
 function update(self, dt)
-	draw_time_accum = draw_time_accum + (draw_time or 0)
-	cur_frame = cur_frame + 1
-	time_accum = time_accum + dt
-	if time_accum >= 1.0 then
-		local df = cur_frame - start_frame
-		local fps = math.min(999, math.floor(df / time_accum))
-		local api_spent = draw_time_accum / time_accum
+	fps_cur_frame = fps_cur_frame + 1
+	fps_time_accum = fps_time_accum + dt
+	if fps_time_accum >= 1.0 then
+		local df = fps_cur_frame - fps_start_frame
+		fps = math.min(999, math.floor(df / fps_time_accum))
 
-		local t = "FPS: " .. string.format("%d", fps) .. "\n" .. "Draw time (per 1 sec): " .. string.format("%d ms", api_spent * 1000)
-		label.set_text("#label", t)
+		fps_start_frame = fps_cur_frame
+		fps_time_accum = 0
 
-		start_frame = cur_frame
-		time_accum = 0
-		draw_time_accum = 0
+		update_stats(self)
+	end
+
+	if draw_time and draw_time > 0 then
+		draw_time_accum = draw_time_accum + (draw_time or 0)
+		draw_frame_num = draw_frame_num + 1
+		if draw_frame_num == 60 then
+			api_spent = draw_time_accum
+			api_spent_min = math.min(api_spent_min, api_spent)
+			draw_time_accum = 0
+			draw_frame_num = 0
+
+			update_stats(self)
+		end
 	end
 end
 

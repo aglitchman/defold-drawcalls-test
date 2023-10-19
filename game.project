@@ -12,6 +12,7 @@ use_accelerometer = 0
 [display]
 width = 1440
 height = 720
+high_dpi = 1
 
 [script]
 shared_state = 1
@@ -43,4 +44,9 @@ max_count = 1000
 
 [model]
 max_count = 1000
+
+[html5]
+heap_size = 32
+scale_mode = stretch
+cssfile = /builtins/manifests/web/dark_theme.css
 

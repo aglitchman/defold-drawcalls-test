@@ -1,5 +1,5 @@
 mesh: "/builtins/assets/meshes/quad.dae"
-material: "/assets/materials/sprite_quad.material"
+material: "/builtins/materials/model.material"
 textures: "/assets/images/7168850_star_costume_mask_celebrate_icon.png"
 skeleton: ""
 animations: ""

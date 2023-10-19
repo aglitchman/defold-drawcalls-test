@@ -1,6 +1,6 @@
 components {
-  id: "sprite_quad"
-  component: "/main/sprite_quad.model"
+  id: "model"
+  component: "/main/sprite_model.model"
   position {
     x: 0.0
     y: 0.0
