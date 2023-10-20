@@ -1,9 +1,9 @@
 embedded_components {
   id: "sprite"
   type: "sprite"
-  data: "tile_set: \"/main/sprite2.atlas\"\n"
-  "default_animation: \"7168851_reindeer_costume_xmas_icon\"\n"
-  "material: \"/builtins/materials/sprite.material\"\n"
+  data: "tile_set: \"/main/sprite1.atlas\"\n"
+  "default_animation: \"7168850_star_costume_mask_celebrate_icon\"\n"
+  "material: \"/assets/materials/sprite.material\"\n"
   "blend_mode: BLEND_MODE_ALPHA\n"
   ""
   position {

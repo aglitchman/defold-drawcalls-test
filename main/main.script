@@ -7,8 +7,8 @@ function init(self)
 	-- Spawn grid of sprites
 	local n = 1
 	for j = 1, 10 do
-		for i = 1, 20 do
-			local hide_z = 2 -- Set 0 to see the sprites
+		for i = 1, 10 do
+			local hide_z = 0 -- Set 0 to see the sprites, set 2 to hide them.
 			local pos = vmath.vector3(i * 64, j * 64 + 50, hide_z + (j * 20 + i) / 1000)
 
 			if j <= 5 then
@@ -42,7 +42,9 @@ local engine_sha1 = sys.get_engine_info().version_sha1
 
 local function update_stats(self)
 	local t = "FPS: " .. string.format("%02d", fps or -1) .. string.format(", Engine SHA1 %s\n", engine_sha1)
-	t = t .. "Draw time (per 60 frames): " .. string.format("%d ms (min %d)", (api_spent or -1) * 1000, api_spent_min * 1000)
+	if api_spent then
+		t = t .. "Draw time (per 60 frames): " .. string.format("%d ms (min %d)", (api_spent or -1) * 1000, api_spent_min * 1000)
+	end
 	label.set_text("#label", t)
 end
 
